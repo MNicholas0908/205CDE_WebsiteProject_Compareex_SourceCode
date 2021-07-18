@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Compareex</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="Home.html"><img src="http://localhost/Compareex Logo.png" class="logo"
+                    height="150px"></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01"
+                aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarColor01">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" href="#"><span
+                                class="visually-hidden">(current)</span>Home</a></li>
+                    <li class="nav-item" id="login"><a class="nav-link" href="Login.html">Login</a></li>
+                    <li class="nav-item"><a class="nav-link" href="List.html">List</a></li>
+                    <li class="nav-item" id="savedListlink"><a class="nav-link" href="SavedList.html">Saved List</a>
+                    </li>
+                    <li class="nav-item" id="logout"><a class="nav-link" href="Logout.php">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+        <h1 class="h1" style="color: #00ccff; text-align: center">COMPARE PRICES AMONG PLATFORMS</h1>
+        <p class="p" style="text-align: center">Compare prices among platforms to get best price while shopping
+            online!<br>Click to get started!</p>
+        <div style="text-align: center">
+            <input id="searchQuery" type="text" class="form-control" style="text-align: center" placeholder="Search">
+            <p>&nbsp;</p>
+            <button id="submit" type="button" class="btn btn-primary"
+                style="border-radius: 25px"><span></span>Search</button>
+        </div>
+        <p>&nbsp;</p>
+        <div id="result">
+        </div>
+    </div>
+    <script>
+        $(document).ready(function () {
+            $.ajax('Session.php', {
+                type: "GET",
+                success: function (session) {
+                    if (session == 1) {
+                        $("#login").hide()
+                        console.log("logged in")
+                    }
+                    else {
+                        $("#savedListlink").hide()
+                        $("#logout").hide()
+                        console.log("logged out")
+                    }
+                }
+            })
+        })
+        $("#submit").click(function () {
+            $("#result").html("<table border = '1' class='table table-striped'><tr class='table-primary'><th>Product</th><th>Specs</th><th>Price</th><th>Platform</th><th>Action</th></tr></table>")
+            let product = $("#searchQuery").val()
+            $.ajax('Connect.php?Query=' + product, {
+                type: "GET",
+                success: function (result) {
+                    let parsedResult = JSON.parse(result)
+                    if (parsedResult.length > 0) {
+                        parsedResult.forEach(Element => {
+                            let productID = Element.ProductID
+                            let displayName = Element.DisplayName
+                            let specs = Element.Specs
+                            let price = Element.Price
+                            let platform = Element.Platform
+                            $(".table").append("<tr><td>" + displayName + "</td><td>" + specs + "</td><td>" + price + "</td><td>" + platform + "</td><td><button class='addListbtn btn btn-primary' style='border-radius: 25px' value='" + productID + "'>Add to List</button></td></tr>")
+                        })
+                    }
+                }
+            })
+        })
+        $("#result").delegate(".addListbtn", "click", function () {
+            let product = $(this).val()
+            $.ajax('StoreList.php?Query=' + product, {
+                type: "GET",
+                success: function (data) {
+                    let parsedData = JSON.parse(data)
+                    console.log(parsedData)
+                }
+            })
+        })
+    </script>
+</body>
+
+</html>

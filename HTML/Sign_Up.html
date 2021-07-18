@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Compareex Sign Up</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="Home.html"><img src="http://localhost/Compareex Logo.png" class="logo" height="150px"></a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarColor01">
+                  <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" href="Home.html">Home</a></li>
+                    <li class="nav-item" id="login"><a class="nav-link" href="Login.html">Login</a></li>
+                    <li class="nav-item"><a class="nav-link" href="List.html">List</a></li>
+                    <li class="nav-item" id="savedListlink"><a class="nav-link" href="SavedList.html">Saved List</a></li>
+                    <li class="nav-item" id="logout"><a class="nav-link" href="Logout.php">Logout</a></li>
+                  </ul>
+                </div>
+            </div>
+        </nav>
+        <form id="signupForm" style="border: 1px solid #ccc" class="container">
+            <div class="form-group">
+                <h1 style="color: #00ccff; text-align: center">Sign Up</h1>
+                <p style="text-align: center">Please fill in this form to create an account</p>
+                <hr>
+
+                <label for="username" class="form-label mt-4"><b>Username</b></label>
+                <input id="username" type="text" class="form-control" placeholder="Enter Username" name="username" required>
+
+                <label for="email" class="form-label mt-4"><b>Email</b></label>
+                <input id="email" type="text" class="form-control" placeholder="Enter Email" name="email" required>
+
+                <label for="psw" class="form-label mt-4"><b>Password</b></label>
+                <input id="password" type="password" class="form-control" placeholder="Enter Password" name="password" required>
+                <p>By creating an account you agree to our <a href="#" style="color: dodgerblue">Terms & Privacy Conditions</a></p>
+                <p>Click <a href="Login.html" style="color: dodgerblue">here</a> if you already have an account</p>
+                <div class="d-flex justify-content-around">
+                    <button type="button" class="btn btn-secondary" style="width: 50%" onclick="window.location.href='http://localhost/home.html'">Cancel</button>
+                    <button id="signup" type="button" class="btn btn-primary" style="width: 50%">Sign Up</button>
+                </div>
+                <div id="message">
+
+                </div>
+            </div>
+        </form>
+        <script>
+            $(document).ready(function(){
+                $.ajax('Session.php',{
+                    type: "GET",
+                    success : function(session){
+                        if (session == 1){
+                            $("#login").hide()
+                            console.log("logged in")
+                        }
+                        else {
+                            $("#logout").hide()
+                            console.log("logged out")
+                        }   
+                    }  
+                })
+            })
+            $("#signup").click(function(e){
+                e.preventDefault()
+                $("#message").html("")
+                let formData = $("#signupForm").serialize()
+                $.ajax({
+                    type: "POST",
+                    url: "Sign_Up.php",
+                    data: formData,
+                    success : function(data){
+                        $("#message").append("<p>" + data + "</p>")
+                        if (data == ""){
+                            location = "Home.html"
+                        }
+                    }
+                })
+            })
+        </script>
+    </body>
+</html>

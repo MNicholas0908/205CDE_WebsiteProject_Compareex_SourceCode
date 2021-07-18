@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Compareex Login</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="Home.html"><img src="http://localhost/Compareex Logo.png" class="logo" height="150px"></a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarColor01">
+                  <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" href="Home.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="List.html">List</a></li>
+                    <li class="nav-item" id="savedListlink"><a class="nav-link" href="SavedList.html">Saved List</a></li>
+                    <li class="nav-item" id="logout"><a class="nav-link" href="Logout.php">Logout</a></li>
+                  </ul>
+                </div>
+            </div>
+        </nav>
+        <form id="loginForm" style="border: 1px solid #ccc" class="container">
+            <div class="form-group">
+                <h1 style="color: #00ccff; text-align: center">Login</h1>
+                <p style="text-align: center">Please enter email account and password to login</p>
+                <hr>
+
+                <label for="email" class="form-label mt-4"><b>Email</b></label>
+                <input type="text" class="form-control" placeholder="Enter Email" name="email" required>
+
+                <label for="psw" class="form-label mt-4"><b>Password</b></label>
+                <input type="password" class="form-control" placeholder="Enter Password" name="password" required>
+
+                <p>By using Compareex with an account you agree to our <a href="#" style="color: dodgerblue">Terms & Privacy Conditions</a></p>
+                <p>Click <a href="Sign_Up.html" style="color: dodgerblue">here</a> if you do not have account</p>
+                <div class="d-flex justify-content-around">
+                    <button type="button" class="btn btn-secondary" style="width: 50%" onclick="window.location.href='http://localhost/home.html'">Cancel</button>
+                    <button id="login" type="submit" class="btn btn-primary" style="width: 50%">Login</button>
+                </div>
+                <div id="message">
+                </div>
+            </div>
+        </form>
+        <script>
+        $(document).ready(function(){
+                $.ajax('Session.php',{
+                    type: "GET",
+                    success : function(session){
+                        if (session == 1){
+                            $("#login").hide()
+                            console.log("logged in")
+                        }
+                        else {
+                            $("#logout").hide()
+                            console.log("logged out")
+                        }   
+                    }  
+                })
+            })
+        $("#login").click(function(e){
+            e.preventDefault()
+            $("#message").html("")
+            let formData = $("#loginForm").serialize()
+            $.ajax({
+                type: "POST",
+                url: "Login.php",
+                data: formData,
+                success : function(data){
+                    $("#message").append("<p>" + data + "</p>")
+                    if (data == ""){
+                        location = "Home.html"
+                    }
+                }
+            })
+        })
+        </script>
+    </body>
+</html>

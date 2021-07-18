@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>List</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    </head>
+        <body>
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+              <div class="container-fluid">
+                <a class="navbar-brand" href="Home.html"><img src="http://localhost/Compareex Logo.png" class="logo" height="150px"></a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarColor01">
+                  <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" href="Home.html">Home</a></li>
+                    <li class="nav-item" id="login"><a class="nav-link" href="Login.html">Login</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">List<span class="visually-hidden">(current)</span></a></li>
+                    <li class="nav-item" id="savedlist"><a class="nav-link" href="SavedList.html">Saved List</a></li>
+                    <li class="nav-item" id="logout"><a class="nav-link" href="Logout.php">Logout</a></li>
+                  </ul>
+                </div>
+              </div>
+            </nav>
+            <div class="container">
+                 <h1 style="text-align: center; color: #00ccff">List</h1>
+                    <div id="listResult">
+                        <table border = "1" class="table table-striped">
+                            <tr class="table-primary">
+                                <th>Name</th>
+                                <th>Specs</th>
+                                <th>Price</th>
+                                <th>Platform</th>
+                            </tr>
+                        </table>
+                        <div class='d-flex justify-content-center'>
+                            <button id="saveList" type="button" class="btn btn-primary" data-toggle="modal" data-target="#inputListNameModal">Save List</button>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="inputListNameModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLongTitle">Create List</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <label class="form-label mt-4" for="readOnlyInput">Enter List Name</label>
+                                    <input class="form-control" id="ListName" type="text" placeholder="List Name">
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-primary" id="saveListName">Confirm</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        <script>
+            $(document).ready(function(){
+                $.ajax('Session.php',{
+                    type: "GET",
+                    success : function(session){
+                        if (session == 1){
+                            $("#login").hide()
+                            console.log("logged in")
+                        }
+                        else {
+                            $("#logout").hide()
+                            $("#savedlist").hide()
+                            console.log("logged out")
+                        }   
+                    }  
+                })
+                $.ajax('ShowList.php',{
+                    type: "GET",
+                    success : function(list){
+                        let parsedList = JSON.parse(list)
+                        //console.log(parsedList)
+                        if (parsedList.length > 0){
+                            parsedList.forEach(Element=>{
+                                let displayName = Element.DisplayName
+                                let specs = Element.Specs
+                                let price = Element.Price
+                                let platform = Element.Platform
+                                $(".table").append("<tr><td>"+displayName+"</td><td>"+specs+"</td><td>"+price+"</td><td>"+platform+"</td></tr>")
+                            })
+                        }
+                    }
+                })
+            })
+            $("#saveListName").click(function(){
+                let listName = $("#ListName").val()
+                $.ajax('Session.php',{
+                    type: "GET",
+                    success : function(session){
+                        if (session == 1){
+                            $.ajax('InsertList.php?Query='+listName,{
+                                type: "GET",
+                                success : function(data){
+//                                    let parsedData = JSON.parse(data)
+                                    console.log(data)
+                                    if (data == "Success"){
+                                        location = "SavedList.html"
+                                    }
+                                    else{
+                                        alert("Failed to save list")
+                                    }
+                                }
+                            })
+                        }
+                        else {
+                            alert("Please login to save list")
+                            location = "Login.html"
+                        }   
+                    }  
+                })
+            })
+        </script>
+    </body>
+</html>

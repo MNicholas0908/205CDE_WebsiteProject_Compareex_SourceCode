@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Saved List</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="Home.html"><img src="http://localhost/Compareex Logo.png" class="logo" height="150px"></a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarColor01">
+                  <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" href="Home.html">Home</a></li>
+                    <li class="nav-item" id="login"><a class="nav-link" href="Login.html">Login</a></li>
+                    <li class="nav-item"><a class="nav-link" href="List.html">List</a></li>
+                    <li class="nav-item" id="savedListlink"><a class="nav-link" href="#"><span class="visually-hidden">(current)</span>Saved List</a></li>
+                    <li class="nav-item" id="logout"><a class="nav-link" href="Logout.php">Logout</a></li>
+                  </ul>
+                </div>
+            </div>
+        </nav>
+        <div class="container">
+            <h1 style="text-align: center; color: #00ccff">Saved List</h1>
+            <div id="listResult" class="d-flex flex-wrap">
+            </div>
+        </div>
+        <script>
+            $(document).ready(function(){
+                $.ajax('Session.php',{
+                    type: "GET",
+                    success : function(session){
+                        if (session == 1){
+                            $("#login").hide()
+                            console.log("logged in")
+                            $.ajax('SavedList.php',{
+                                type: "GET",
+                                success : function(list){
+                                    let parsedList = JSON.parse(list)
+                                    
+                                    let result = [];
+                                    
+                                    for(let i of parsedList){
+                                        if(!result[i.cartID]) {
+                                            result[i.cartID] = [i];
+                                        } else {
+                                            result[i.cartID].push(i);
+                                        }
+                                    }
+                                    
+                                    result.forEach(function(Element, index){
+                                        console.log(Element);
+                                        if (Element.length > 1) {
+                                            console.log(Element[index-1].cartID)
+                                            $("#listResult").append("<div class='card border primary mb-3' style='max-width: 20rem; margin: 10px'><div id='listCardHeader' class='card-header' style='text-align: center; color: #00ccff;'>"+Element[index-1].List_Name+"</div><div class='card-body'><table border='1' class='table table-striped' id='"+Element[index-1].cartID+"'><tr class='table-primary'><th>Product</th><th>Specs</th><th>Price</th><th>Platform</th></tr></table></div></div>")
+                                            Element.forEach(element => {
+                                                listName = element.List_Name
+                                                let displayName = element.DisplayName
+                                                let specs = element.Specs
+                                                let price = element.Price
+                                                let platform = element.Platform
+                                                $("#"+element.cartID).append("<tr><td>"+displayName+"</td><td>"+specs+"</td><td>"+price+"</td><td>"+platform+"</td></tr>")
+                                            });
+                                        } else {
+                                            Element.forEach(element => {
+                                                $("#listResult").append("<div class='card border primary mb-3' style='max-width: 20rem; margin: 10px'><div id='listCardHeader' class='card-header' style='text-align: center; color: #00ccff;'>"+element.List_Name+"</div><div class='card-body'><table border='1' class='table table-striped' id='"+element.cartID+"'><tr class='table-primary'><th>Product</th><th>Specs</th><th>Price</th><th>Platform</th></tr></table></div></div>")
+                                                listName = element.List_Name
+                                                let displayName = element.DisplayName
+                                                let specs = element.Specs
+                                                let price = element.Price
+                                                let platform = element.Platform
+                                                $("#"+element.cartID).append("<tr><td>"+displayName+"</td><td>"+specs+"</td><td>"+price+"</td><td>"+platform+"</td></tr>")
+                                            });
+                                        }
+                                    })
+                                }
+                            })
+                        }
+                        else {
+                            $("#settings").hide()
+                            $("#logout").hide()
+                            console.log("logged out")
+                        }   
+                    }  
+                })
+            })
+        </script>
+    </body>
+</html>
